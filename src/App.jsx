@@ -342,7 +342,7 @@
                 {rangeStart && (
                   <div className="text-xs font-semibold mb-2" style={{ color: accent }}>
                     {rangeEnd
-                      ? `${rangeStart.day} – ${rangeEnd.day} ${MONTHS[viewMonth].slice(0,3)}`
+                      ? `${rangeStart.day} ${MONTHS[rangeStart.month].slice(0,3)} – ${rangeEnd.day} ${MONTHS[viewMonth].slice(0,3)}`
                       : `${rangeStart.day} ${MONTHS[viewMonth].slice(0,3)} ${viewYear}`
                     }
                   </div>
