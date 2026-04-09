@@ -8,13 +8,21 @@
   ];
 
   const HOLIDAYS = {
-    "1-1": "New Year's Day", "2-14": "Valentine's Day",
-    "3-17": "St. Patrick's Day", "4-22": "Earth Day",
-    "5-1": "May Day", "6-21": "Summer Solstice",
-    "7-4": "Independence Day", "8-15": "Assumption Day",
-    "9-1": "Labour Day", "10-31": "Halloween",
-    "11-11": "Veterans Day", "12-25": "Christmas",
-  };
+  // Fixed National Holidays
+  "1-26": "Republic Day 🇮🇳",
+  "8-15": "Independence Day 🇮🇳",
+  "10-2": "Gandhi Jayanti", 
+
+  // Fixed Popular Observances
+  "1-1": "New Year's Day",
+  "5-1": "Labour Day",
+  "6-21": "International Yoga Day",
+
+  // Regionally Common Fixed Days
+  "1-14": "Pongal",
+  "4-14": "Ambedkar Jayanti / Tamil New Year / Baisakhi",
+  "12-25": "Christmas",
+};
 
   const MONTH_IMAGES = [
     "https://picsum.photos/seed/jan-snow/900/300",      // Jan
@@ -77,13 +85,38 @@
     );
   }
 
-  function HolidayBadge({ label }) {
+  function HolidayBadge({ label, fullLabel, note }) {
+    const [showTooltip, setShowTooltip] = useState(false);
     return (
-      <span className="absolute top-0.5 left-1/2 -translate-x-1/2 bg-red-500 text-white text-xs px-1 py-0.5 rounded whitespace-nowrap font-bold tracking-wider z-5 pointer-events-none" style={{
-        fontSize: '7px',
-        fontFamily: "'DM Sans',sans-serif",
-        letterSpacing: '.3px',
-      }}>{label}</span>
+      <span
+        className="absolute top-0.5 left-1/2 -translate-x-1/2 bg-red-500 text-white text-xs px-1 py-0.5 rounded whitespace-nowrap font-bold tracking-wider z-5"
+        style={{
+          fontSize: '7px',
+          fontFamily: "'DM Sans',sans-serif",
+          letterSpacing: '.3px',
+          cursor: 'pointer',
+          zIndex: 10,
+        }}
+        onMouseEnter={() => setShowTooltip(true)}
+        onMouseLeave={() => setShowTooltip(false)}
+      >
+        {label}
+        {showTooltip && (
+          <div
+            className="absolute left-1/2 -translate-x-1/2 mt-1 bg-white text-black text-xs rounded shadow-lg p-2 min-w-30 max-w-55 border border-gray-200"
+            style={{
+              top: '100%',
+              whiteSpace: 'pre-line',
+              zIndex: 100,
+              fontSize: '11px',
+              pointerEvents: 'auto',
+            }}
+          >
+            <div className="font-bold mb-1" style={{color:'#c00'}}>{fullLabel}</div>
+            {note && <div className="mt-1 text-gray-700">📝 {note}</div>}
+          </div>
+        )}
+      </span>
     );
   }
 
@@ -420,6 +453,7 @@
                   const holiday = isCur ? HOLIDAYS[holidayKey] : null;
                   const noteKey = `${viewYear}-${viewMonth}-${cell.day}`;
                   const hasNote = isCur && !!notes[noteKey];
+                  const noteText = hasNote ? notes[noteKey] : null;
                   const dow = idx % 7; // 0=Mon
 
                   let cellBg = "transparent";
@@ -445,7 +479,13 @@
                       {isToday && !isStart && !isEnd && (
                         <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full" style={{ background: accent }} />
                       )}
-                      {holiday && <HolidayBadge label={holiday.split("'")[0].split(" ")[0]} />}
+                      {holiday && (
+                        <HolidayBadge
+                          label={holiday.split(" ")[0]}
+                          fullLabel={holiday}
+                          note={noteText}
+                        />
+                      )}
                       <span className={`text-sm leading-tight ${isToday||isStart||isEnd ? "font-bold" : "font-normal"}`} style={{
                         color: cellColor,
                         marginTop: holiday ? 10 : 0,
